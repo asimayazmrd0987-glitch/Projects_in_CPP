@@ -118,14 +118,14 @@ public:
 
 
 #define SAFE_EXECUTE_BEGIN  try {
-#define SAFE_EXECUTE_END                                            
-    } catch (const out_of_range& e) {                              
-        cerr << " [Missing arg] " << e.what() << "\n";             
-        CommandStats::recordFailure(); return;                      
-    } catch (const exception& e) {                                 
-        cerr << " [Error] " << e.what() << "\n";                   
-        CommandStats::recordFailure(); return;                      
-    }                                                              
+#define SAFE_EXECUTE_END                                            \
+    } catch (const out_of_range& e) {                              \
+        cerr << " [Missing arg] " << e.what() << "\n";             \
+        CommandStats::recordFailure(); return;                      \
+    } catch (const exception& e) {                                 \
+        cerr << " [Error] " << e.what() << "\n";                   \
+        CommandStats::recordFailure(); return;                      \
+    }                                                              \
     CommandStats::recordSuccess();
 
 class LsCommand : public Command {
@@ -341,7 +341,7 @@ public:
         cout << "\n ===== MyShell Commands =====\n";
         if (commands)
             for (auto it = commands->begin(); it != commands->end(); ++it)
-                cout << "  " << it->second->description() << "\n";  // virtual dispatch
+                cout << "  " << it->second->description() << "\n"; 
         cout << "  exit               — Quit\n";
         cout << " ============================\n\n";
         SAFE_EXECUTE_END
@@ -416,6 +416,7 @@ public:
             if (line == "exit") { cout << "\n Goodbye!\n"; printStats(gStats); break; }
             if (line.empty()) continue;
 
+            // Log and save to history (skip duplicates)
             if (logger) try { logger->log(line); } catch (...) {}
             if (history.empty() || history.back() != line)
                 history.push_back(line);
