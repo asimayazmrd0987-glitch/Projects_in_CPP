@@ -59,7 +59,6 @@ void printStats(const CommandStats& cs) {
 
 CommandStats gStats;   
 
-
 template<typename T>
 T safeGet(const vector<string>& args, size_t idx, const string& name) {
     if (idx >= args.size())
@@ -83,7 +82,7 @@ private:
     int      entryCount;
 
 public:
-    explicit CommandLogger(const string& filename) : entryCount(0) {  // [13] init list
+    explicit CommandLogger(const string& filename) : entryCount(0) {  
         logFile.open(filename.c_str(), ios::app);
         if (!logFile.is_open())
             throw runtime_error("Cannot open log: " + filename);
@@ -112,10 +111,11 @@ public:
 
 class Command {
 public:
-    virtual ~Command() {}                                    // virtual destructor [2]
-    virtual void   execute(const vector<string>& args) = 0; // pure virtual [1]
-    virtual string description() const = 0;                 // pure virtual [1]
+    virtual ~Command() {}                                    
+    virtual void   execute(const vector<string>& args) = 0; 
+    virtual string description() const = 0;                 
 };
+
 
 #define SAFE_EXECUTE_BEGIN  try {
 #define SAFE_EXECUTE_END                                            
@@ -124,7 +124,7 @@ public:
         CommandStats::recordFailure(); return;                      
     } catch (const exception& e) {                                 
         cerr << " [Error] " << e.what() << "\n";                   
-        CommandStats::recordFailure(); return;                     
+        CommandStats::recordFailure(); return;                      
     }                                                              
     CommandStats::recordSuccess();
 
@@ -341,7 +341,7 @@ public:
         cout << "\n ===== MyShell Commands =====\n";
         if (commands)
             for (auto it = commands->begin(); it != commands->end(); ++it)
-                cout << "  " << it->second->description() << "\n";  
+                cout << "  " << it->second->description() << "\n";  // virtual dispatch
         cout << "  exit               — Quit\n";
         cout << " ============================\n\n";
         SAFE_EXECUTE_END
@@ -360,10 +360,10 @@ public:
 
 class MyShell {
 private:
-    map<string, Command*> commands;  // command registry
-    vector<string>        history;   // typed-command history
-    bool                  running;   // main-loop flag
-    CommandLogger*        logger;    // RAII heap logger
+    map<string, Command*> commands; 
+    vector<string>        history;   
+    bool                  running;   
+    CommandLogger*        logger;    
 
 public:
     MyShell() : running(true), logger(nullptr) {
@@ -395,7 +395,7 @@ public:
 
     ~MyShell() {
         for (auto it = commands.begin(); it != commands.end(); ++it)
-            delete it->second;  
+            delete it->second; 
         delete logger;          
     }
 
@@ -412,7 +412,7 @@ public:
             GET_CWD(buf, sizeof(buf));
             cout << "myshell:" << buf << "> ";
 
-            if (!getline(cin, line)) break;   // EOF → quit
+            if (!getline(cin, line)) break;   
             if (line == "exit") { cout << "\n Goodbye!\n"; printStats(gStats); break; }
             if (line.empty()) continue;
 
